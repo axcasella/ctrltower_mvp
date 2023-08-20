@@ -12,6 +12,10 @@ import contractManagementRoutes from './routes/contract_management.js';
 import dealsRoutes from './routes/deals.js';
 import settingsRoutes from './routes/settings.js';
 
+// Mock data import
+import User from "./models/user.js";
+import { dataUser } from "./data/index.js";
+
 // Configuration
 dotenv.config();
 const app = express();
@@ -33,3 +37,15 @@ app.use("/contract_management", contractManagementRoutes);
 app.use("/deals", dealsRoutes);
 // for settings
 app.use("/settings", settingsRoutes);
+
+// Mongoose
+const PORT = process.env.PORT || 5001;
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+    app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
+
+    // Mock data
+    // Do this only once
+    // User.insertMany(dataUser).then(() => console.log("Mock user data inserted"));
+
+}).catch((error) => console.log(error.message));
+
