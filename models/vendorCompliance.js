@@ -6,6 +6,9 @@ const VendorComplianceSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    rating: {
+      type: Number,
+    },
     safer_fmcsa: {
       entity_type: String,
       legal_name: String,

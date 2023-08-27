@@ -6,8 +6,8 @@ const VendorStatsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    rating: {
-      type: Number,
+    shipperID: {
+      type: String,
       required: true,
     },
     vestimateLowerRange: {
