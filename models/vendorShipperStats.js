@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const VendorStatsSchema = new mongoose.Schema(
+const VendorShipperStatsSchema = new mongoose.Schema(
   {
     vendorID: {
       type: String,
@@ -28,5 +28,5 @@ const VendorStatsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const VendorStats = mongoose.model("VendorStats", VendorStatsSchema);
-export default VendorStats;
+const VendorShipperStats = mongoose.model("VendorShipperStats", VendorShipperStatsSchema);
+export default VendorShipperStats;

@@ -14,7 +14,12 @@ import settingsRoutes from './routes/settings.js';
 
 // Mock data import
 import User from "./models/user.js";
-import { dataUser } from "./data/index.js";
+import Shipper from "./models/shipper.js";
+import Vendor from "./models/vendor.js";
+import VendorCompliance from "./models/vendorCompliance.js";
+import VendorShipperStats from "./models/vendorShipperStats.js";
+
+import { dataUser, dataVendor, dataVendorCompliance } from "./data/index.js";
 
 // Configuration
 dotenv.config();
@@ -45,7 +50,9 @@ mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopol
 
     // Mock data
     // Do this only once
-    User.insertMany(dataUser).then(() => console.log("Mock user data inserted"));
+    // User.insertMany(dataUser).then(() => console.log("Mock user data inserted"));
+    // Vendor.insertMany(dataVendor).then(() => console.log("Mock vendor data inserted"));
+    // VendorCompliance.insertMany(dataVendorCompliance).then(() => console.log("Mock vendor compliance data inserted"));
 
 }).catch((error) => console.log(error.message));
 

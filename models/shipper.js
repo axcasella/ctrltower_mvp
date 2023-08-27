@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const ShipperSchema = new mongoose.Schema(
   {
     name: {
