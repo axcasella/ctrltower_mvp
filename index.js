@@ -45,7 +45,7 @@ mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopol
 
     // Mock data
     // Do this only once
-    // User.insertMany(dataUser).then(() => console.log("Mock user data inserted"));
+    User.insertMany(dataUser).then(() => console.log("Mock user data inserted"));
 
 }).catch((error) => console.log(error.message));
 
