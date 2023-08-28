@@ -19,10 +19,13 @@ const VendorShipperStatsSchema = new mongoose.Schema(
       required: true,
     },
     vestimateCloseTime: {
-      type: [String],
+      type: Number,
     },
     vestimateSavings: {
-      type: [String],
+      type: Number,
+    },
+    vestimateMarketShare: {
+      type: Number,
     },
   },
   { timestamps: true }

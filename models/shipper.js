@@ -13,23 +13,33 @@ const ShipperSchema = new mongoose.Schema(
     tags: {
       type: [String],
     },
+    industry: {
+      type: String,
+      required: true,
+    },
     address: {
       type: String,
+      required: true,
     },
     city: {
       type: String,
+      required: true,
     },
     state: {
       type: String,
+      required: true,
     },
     zip: {
       type: Number,
+      required: true,
     },
     phone_number: {
       type: String,
+      required: true,
     },
     email: {
       type: String,
+      required: true,
     },
     website: {
       type: String,

@@ -6,7 +6,7 @@ export const dataUser = [
     password: "pass0",
     company: "Frida",
     phone: "8346315874",
-    occupation: "Staff"
+    occupation: "VP of Operations"
   },
   {
     _id: "63701cc1f03239c72c000180",
@@ -15,7 +15,7 @@ export const dataUser = [
     password: "pass0",
     phone: "9981906117",
     company: "Little Spoon",
-    occupation: "Staff"
+    occupation: "VP of Logistics"
   },
 ];
 
@@ -32,6 +32,7 @@ export const dataVendor = [
     city: "San Francisco",
     state: "CA",
     zip: 94105,
+    country: "US",
     phone_number: "415-555-5555",
     email: "info@greyhound.com",
     website: "https://www.greyhound.com/",
@@ -48,6 +49,7 @@ export const dataVendor = [
     city: "San Francisco",
     state: "CA",
     zip: 94105,
+    country: "US",
     phone_number: "415-555-5555",
     email: "info@greyhound.com",
     website: "https://www.greyhound.com/",
@@ -64,6 +66,7 @@ export const dataVendor = [
     city: "San Francisco",
     state: "CA",
     zip: 94105,
+    country: "US",
     phone_number: "415-555-5555",
     email: "info@greyhound.com",
     website: "https://www.greyhound.com/",
@@ -80,6 +83,7 @@ export const dataVendor = [
     city: "San Francisco",
     state: "CA",
     zip: 94105,
+    country: "US",
     phone_number: "415-555-5555",
     email: "info@greyhound.com",
     website: "https://www.greyhound.com/",
@@ -96,9 +100,113 @@ export const dataVendor = [
     city: "Catskills",
     state: "NY",
     zip: 94105,
+    country: "US",
     phone_number: "877-555-5555",
     email: "info@greyhound.com",
     website: "https://www.greyhound.com/",
+  }
+];
+
+export const dataShipper = [
+  {
+    _id: "63701d74f0323986f300013e",
+    name: "Nike",
+    type: "retailer",
+    description: "Sports apparel and equipment",
+    tags: [
+      "shipper", "apparel", "sports"
+    ],
+    industry: "apparel",
+    address: "123 Main St",
+    city: "San Francisco",
+    state: "CA",
+    zip: 94105,
+    country: "US",
+    phone_number: "415-555-5555",
+    email: "info@nike.com",
+    website: "https://www.nike.com/",
+    annual_volume: "100 million units per year",
+    annual_spend: "$250 million per year",
+  },
+  {
+    _id: "63701d74f03239b913000026",
+    name: "Frida",
+    type: "retailer",
+    description: "Baby food and formula",
+    tags: [
+      "baby", "food", "perishable"
+    ],
+    industry: "baby",
+    address: "123 Main St",
+    city: "San Francisco",
+    state: "CA",
+    zip: 94105,
+    country: "US",
+    phone_number: "415-555-5555",
+    email: "info@frida.com",
+    website: "https://www.frida.com/",
+    annual_volume: "2 million units per year",
+    annual_spend: "$15 million per year",
+  },
+  {
+    _id: "63701d74f0323986f3000146",
+    name: "Little Spoon",
+    type: "retailer",
+    description: "Baby food and formula",
+    tags: [
+      "baby", "food", "perishable"
+    ],
+    industry: "baby",
+    address: "123 Main St",
+    city: "San Francisco",
+    state: "CA",
+    zip: 94105,
+    country: "US",
+    phone_number: "415-555-5555",
+    email: "info@littlespoon.com",
+    website: "https://www.littlespoon.com/",
+    annual_volume: "3 million units per year",
+    annual_spend: "$10 million per year",
+  },
+  {
+    _id: "63701d74f03239bef0000140",
+    name: "Coke",
+    type: "retailer",
+    description: "Coke Cola is a carbonated soft drink",
+    tags: [
+      "international", "beverage", "temperature-controlled"
+    ],
+    industry: "beverage",
+    address: "123 Main St",
+    city: "San Francisco",
+    state: "CA",
+    zip: 94105,
+    country: "US",
+    phone_number: "415-555-5555",
+    email: "info@coke.com",
+    website: "https://www.coke.com/",
+    annual_volume: "100 million units per year",
+    annual_spend: "$250 million per year",
+  },
+  {
+    _id: "63701d74f03239b913000042",
+    name: "Target",
+    type: "retailer",
+    description: "Target is a general merchandise retailer",
+    tags: [
+      "chain", "large", "general"
+    ],
+    industry: "retailer",
+    address: "123 Main St",
+    city: "Catskills",
+    state: "NY",
+    zip: 94105,
+    country: "US",
+    phone_number: "877-555-5555",
+    email: "info@target.com",
+    website: "https://www.target.com/",
+    annual_volume: "100 million units per year",
+    annual_spend: "$250 million per year",
   }
 ];
 
@@ -229,3 +337,56 @@ export const dataVendorCompliance = [
     }
   },
 ];
+
+export const dataVendorShipperStats = [
+  {
+    _id: "63701d74f03239bef0000150",
+    vendorID: "6371259df03239e680000035",
+    shipperID: "63701d74f0323986f300013e",
+    vestimateLowerRange: 15000,
+    vestimateUpperRange: 20000,
+    vestimateCloseTime: 17,
+    vestimateSavings: 30,
+    vestimateMarketShare: 0.02,
+  },
+  {
+    _id: "63701d74f032396b8e00002f",
+    vendorID: "6371259ef032398675000198",
+    shipperID: "63701d74f03239b913000026",
+    vestimateLowerRange: 50000,
+    vestimateUpperRange: 75000,
+    vestimateCloseTime: 26,
+    vestimateSavings: 16,
+    vestimateMarketShare: 0.08,
+  },
+  {
+    _id: "63701d74f03239bef000014a",
+    vendorID: "6371259df03239b7f7000083",
+    shipperID: "63701d74f0323986f3000146",
+    vestimateLowerRange: 15000,
+    vestimateUpperRange: 20000,
+    vestimateCloseTime: 17,
+    vestimateSavings: 30,
+    vestimateMarketShare: 0.02,
+  },
+  {
+    _id: "63701d74f03239528f000042",
+    vendorID: "6371259df03239444100035a",
+    shipperID: "63701d74f03239bef0000140",
+    vestimateLowerRange: 64000,
+    vestimateUpperRange: 67000,
+    vestimateCloseTime: 23,
+    vestimateSavings: 12,
+    vestimateMarketShare: 0.16,
+  },
+  {
+    _id: "63701d74f032390a3400034d",
+    vendorID: "6371259df03239d81e000083",
+    shipperID: "63701d74f03239b913000042",
+    vestimateLowerRange: 50000,
+    vestimateUpperRange: 75000,
+    vestimateCloseTime: 26,
+    vestimateSavings: 16,
+    vestimateMarketShare: 0.08,
+  },
+]
