@@ -15,14 +15,14 @@ export const getVendors = async (req, res) => {
     // Fetch all shipper stats for the array of vendor IDs
     const allShipperStats = await VendorShipperStats.find({
       vendorID: { $in: vendorIds },
-      shipperID: req.shipperID,
+      shipperID: req.query.shipperID,
     });
 
     // Combine the data
     const vendorsWithAllInfo = vendors.map(vendor => ({
       ...vendor._doc,
       complianceInfo: allComplianceInfo.find(compliance => String(compliance.vendorID) === String(vendor._id)),
-      shipperStats: allShipperStats.find(stats => String(stats.vendorID) === String(vendor._id) && String(stats.shipperID) === String(req.shipperID)),
+      shipperStats: allShipperStats.find(stats => String(stats.vendorID) === String(vendor._id) && String(stats.shipperID) === String(req.query.shipperID)),
     }));
 
     res.status(200).json(vendorsWithAllInfo);
@@ -33,7 +33,7 @@ export const getVendors = async (req, res) => {
 
 export const getVendorByID = async (req, res) => {
   try {
-    const vendor = await Vendor.findById(req.vendorID);
+    const vendor = await Vendor.findById(req.query.vendorID);
 
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found." });
@@ -41,13 +41,13 @@ export const getVendorByID = async (req, res) => {
 
     // Fetch compliance info for the vendor ID
     const complianceInfo = await VendorCompliance.findOne({
-      vendorID: req.vendorID,
+      vendorID: req.query.vendorID,
     });
 
     // Fetch shipper stats for the vendor ID
     const shipperStats = await VendorShipperStats.findOne({
-      vendorID: req.vendorID,
-      shipperID: req.shipperID,
+      vendorID: req.query.vendorID,
+      shipperID: req.query.shipperID,
     });
 
     // Combine the data
