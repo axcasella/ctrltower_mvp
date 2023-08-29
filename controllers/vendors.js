@@ -33,7 +33,14 @@ export const getVendors = async (req, res) => {
 
 export const getVendorByID = async (req, res) => {
   try {
-    const vendor = await Vendor.findById(req.query.vendorID);
+    const { vendorID } = req.params; 
+    const { shipperID } = req.query;
+
+    if (!vendorID || !shipperID) {
+      return res.status(404).json({ message: "IDs not provided." });
+    }
+
+    const vendor = await Vendor.findById(vendorID);
 
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found." });
@@ -41,13 +48,13 @@ export const getVendorByID = async (req, res) => {
 
     // Fetch compliance info for the vendor ID
     const complianceInfo = await VendorCompliance.findOne({
-      vendorID: req.query.vendorID,
+      vendorID: vendorID,
     });
 
     // Fetch shipper stats for the vendor ID
     const shipperStats = await VendorShipperStats.findOne({
-      vendorID: req.query.vendorID,
-      shipperID: req.query.shipperID,
+      vendorID: vendorID,
+      shipperID: shipperID,
     });
 
     // Combine the data
