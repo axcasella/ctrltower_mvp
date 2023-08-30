@@ -1,6 +1,44 @@
 import Vendor from "../models/vendor.js";
 import VendorCompliance from "../models/vendorCompliance.js";
 import VendorShipperStats from "../models/vendorShipperStats.js"; 
+import axios from "axios";
+
+// Integration with Safer search API
+export const searchVendors = async(req, res) => {
+  const { name } = req.query;
+
+  if (!name) {
+    return res.status(400).json({ error: 'The "name" parameter is required.' });
+  }
+
+  // URL for the saferwebapi
+  const apiUrl = `https://saferwebapi.com/v2/name/${name}`;
+
+  try {
+    const response = await axios.get(apiUrl, {
+      headers: {
+        'x-api-key': process.env.SAFERWEB_API_KEY
+      }
+    });
+
+    if (response.data && response.status === 200) {
+      console.log(response.data);
+      return res.status(200).json(response.data);
+    } else {
+      return res.status(response.status).json({ error: 'Unexpected response from SaferWebAPI.' });
+    }
+
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      return res.status(error.response.status).json({ error: error.response.data });
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      return res.status(500).json({ error: `Error: ${error.message}` });
+    }
+  }
+};
 
 export const getVendors = async (req, res) => {
   try {
