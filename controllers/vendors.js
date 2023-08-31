@@ -26,27 +26,18 @@ const fetchDataFromSaferWebAP = async(name) => {
 }
 
 // Integration with Safer search API
-export const searchVendors = async(req, res) => {
-  console.log("here");
-  const { name, pageNumber, pageSize } = req.query;
-
-  const page = pageNumber || 1;
-  const size = pageSize || 12;
+const searchVendorsFromFMCSA = async(name, page, size) => {
   const start = (page - 1) * size;
   const end = page * size;
-  
-  if (!name) {
-    return res.status(400).json({ error: 'The "name" parameter is required.' });
-  }
 
   try {
-    let results;
+    let results = [];
 
     // Try to fetch from cache
     const cachedData = await client.get(name);
 
     if (cachedData) {
-      console.log("got data from cache");
+      console.log("got fmcsa search data from cache");
       results = JSON.parse(cachedData);
     } else {
       const data = await fetchDataFromSaferWebAP(name);
@@ -57,23 +48,97 @@ export const searchVendors = async(req, res) => {
           EX: process.env.REDIS_CACHE_EXPIRE_TIME
         });
 
-        console.log("data cached");
+        console.log("fmcsa search data cached");
         results = data;
+      } 
+    }
+
+    // return paginated results
+    return results.slice(start, end);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const fetchDataFromSaferWebAPIByUSDOT = async(usdot) => {
+  const apiUrl = `https://saferwebapi.com/v2/usdot/snapshot/${usdot}`;
+
+  const response = await axios.get(apiUrl, {
+    headers: {
+      'x-api-key': process.env.SAFERWEB_API_KEY
+    }
+  });
+
+  return response.data;
+}
+
+export const getVendorByUSDOTFromFMCSA = async(req, res) => {
+  const { usdot } = req.params;
+
+  if (!usdot) {
+    return res.status(400).json({ error: 'USDOT is required.' });
+  }
+
+  try {
+    // Try to fetch from cache first
+    const cachedData = await client.get(`fmcsa_data_usdot:${usdot}`);
+
+    if (cachedData) {
+      console.log("got fmcsa vendor usdot data from cache");
+      return res.status(200).json(JSON.parse(cachedData));
+    } else {
+      const data = await fetchDataFromSaferWebAPIByUSDOT(usdot);
+
+      if (data) {
+        // Cache the data with prefix "usdot:" for distinction
+        await client.set(`fmcsa_data_usdot:${usdot}`, JSON.stringify(data), {
+          EX: process.env.REDIS_CACHE_EXPIRE_TIME
+        });
+
+        console.log("fmcsa vendor usdot data cached");
+        return res.status(200).json(data);
       } else {
         return res.status(400).json({ error: 'Unexpected response from SaferWebAPI.' });
       }
     }
+  } catch (error) {
+    if (error.response) {
+      return res.status(error.response.status).json({ error: error.response.data });
+    } else {
+      return res.status(500).json({ error: `Error: ${error.message}` });
+    }
+  }
+};
 
-    // Paginate the results
-    const paginatedResults = results.slice(start, end);
+export const searchVendors = async(req, res) => {
+  const { name, pageNumber, pageSize } = req.query;
+
+  const page = pageNumber || 1;
+  const size = pageSize || 12;
+  
+  if (!name) {
+    return res.status(400).json({ error: 'The "name" parameter is required.' });
+  }
+
+  try {
+    let result = [];
+    // search vendors from FMCSA
+    const vendors = await searchVendorsFromFMCSA(name, page, size);
+    // for each vendor in data, call fetchDataFromSaferWebAPIByUSDOT to get the details and append to result
+    for (const vendor of vendors) {
+      const data = await fetchDataFromSaferWebAPIByUSDOT(vendor.usdot);
+      if (data) result.push(data);
+    }
+    
+    // return the data
     return res.status(200).json({
-      currentPage: pageNumber,
-      pageSize: size,
-      totalPages: Math.ceil(results.length / size),
-      totalResults: results.length,
-      data: paginatedResults
+      currentPage: vendors.currentPage,
+      pageSize: vendors.pageSize,
+      totalPages: vendors.totalPages,
+      totalResults: vendors.totalResults,
+      data: result
     });
-
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -84,7 +149,7 @@ export const searchVendors = async(req, res) => {
       return res.status(500).json({ error: `Error: ${error.message}` });
     }
   }
-};
+}
 
 export const getVendors = async (req, res) => {
   try {
