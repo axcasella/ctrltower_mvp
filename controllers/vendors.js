@@ -2,31 +2,77 @@ import Vendor from "../models/vendor.js";
 import VendorCompliance from "../models/vendorCompliance.js";
 import VendorShipperStats from "../models/vendorShipperStats.js"; 
 import axios from "axios";
+import { createClient } from "redis";
+
+// Redis client
+const client = createClient();
+client.on('error', err => console.log('Redis Client Error', err));
+await client.connect();
+client.on('connect', () => {
+  console.log('Redis client connected');
+});
+
+const fetchDataFromSaferWebAP = async(name) => {
+  // URL for the saferwebapi
+  const apiUrl = `https://saferwebapi.com/v2/name/${name}`;
+
+  const response = await axios.get(apiUrl, {
+    headers: {
+      'x-api-key': process.env.SAFERWEB_API_KEY
+    }
+  });
+
+  return response.data;
+}
 
 // Integration with Safer search API
 export const searchVendors = async(req, res) => {
-  const { name } = req.query;
+  console.log("here");
+  const { name, pageNumber, pageSize } = req.query;
 
+  const page = pageNumber || 1;
+  const size = pageSize || 12;
+  const start = (page - 1) * size;
+  const end = page * size;
+  
   if (!name) {
     return res.status(400).json({ error: 'The "name" parameter is required.' });
   }
 
-  // URL for the saferwebapi
-  const apiUrl = `https://saferwebapi.com/v2/name/${name}`;
-
   try {
-    const response = await axios.get(apiUrl, {
-      headers: {
-        'x-api-key': process.env.SAFERWEB_API_KEY
-      }
-    });
+    let results;
 
-    if (response.data && response.status === 200) {
-      console.log(response.data);
-      return res.status(200).json(response.data);
+    // Try to fetch from cache
+    const cachedData = await client.get(name);
+
+    if (cachedData) {
+      console.log("got data from cache");
+      results = JSON.parse(cachedData);
     } else {
-      return res.status(response.status).json({ error: 'Unexpected response from SaferWebAPI.' });
+      const data = await fetchDataFromSaferWebAP(name);
+
+      if (data) {
+        // Cache the data
+        await client.set(name, JSON.stringify(data), {
+          EX: process.env.REDIS_CACHE_EXPIRE_TIME
+        });
+
+        console.log("data cached");
+        results = data;
+      } else {
+        return res.status(400).json({ error: 'Unexpected response from SaferWebAPI.' });
+      }
     }
+
+    // Paginate the results
+    const paginatedResults = results.slice(start, end);
+    return res.status(200).json({
+      currentPage: pageNumber,
+      pageSize: size,
+      totalPages: Math.ceil(results.length / size),
+      totalResults: results.length,
+      data: paginatedResults
+    });
 
   } catch (error) {
     if (error.response) {
