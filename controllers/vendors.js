@@ -31,14 +31,14 @@ const searchVendorsFromFMCSA = async(name, page, size) => {
   const end = page * size;
 
   try {
-    let results = [];
+    let results = {};
 
     // Try to fetch from cache
     const cachedData = await client.get(name);
 
     if (cachedData) {
       console.log("got fmcsa search data from cache");
-      results = JSON.parse(cachedData);
+      results.data = JSON.parse(cachedData);
     } else {
       const data = await fetchDataFromSaferWebAP(name);
 
@@ -49,12 +49,15 @@ const searchVendorsFromFMCSA = async(name, page, size) => {
         });
 
         console.log("fmcsa search data cached");
-        results = data;
+        results.data = data;
       } 
     }
 
     // return paginated results
-    return results.slice(start, end);
+    results.totalPages = Math.ceil(results.data.length / size);
+    results.totalResults = results.data.length;
+    results.vendors = results.data.slice(start, end);
+    return results;
   } catch (error) {
     console.log(error);
     throw error;
@@ -122,22 +125,22 @@ export const searchVendors = async(req, res) => {
   }
 
   try {
-    let result = [];
+    let vendors = [];
     // search vendors from FMCSA
-    const vendors = await searchVendorsFromFMCSA(name, page, size);
+    const searchResult = await searchVendorsFromFMCSA(name, page, size);
     // for each vendor in data, call fetchDataFromSaferWebAPIByUSDOT to get the details and append to result
-    for (const vendor of vendors) {
+    for (const vendor of searchResult.vendors) {
       const data = await fetchDataFromSaferWebAPIByUSDOT(vendor.usdot);
-      if (data) result.push(data);
+      if (data) vendors.push(data);
     }
     
     // return the data
     return res.status(200).json({
-      currentPage: vendors.currentPage,
-      pageSize: vendors.pageSize,
-      totalPages: vendors.totalPages,
-      totalResults: vendors.totalResults,
-      data: result
+      currentPage: pageNumber,
+      pageSize: pageSize,
+      totalPages: searchResult.totalPages,
+      totalResults: searchResult.totalResults,
+      data: vendors
     });
   } catch (error) {
     if (error.response) {
