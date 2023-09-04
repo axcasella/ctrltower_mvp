@@ -12,7 +12,7 @@ client.on('connect', () => {
   console.log('Redis client connected');
 });
 
-const fetchDataFromSaferWebAP = async(name) => {
+const fetchDataFromSaferWebAPI = async(name) => {
   // URL for the saferwebapi
   const apiUrl = `https://saferwebapi.com/v2/name/${name}`;
 
@@ -24,6 +24,15 @@ const fetchDataFromSaferWebAP = async(name) => {
 
   return response.data;
 }
+
+const fetchDataFromMobileFMCSA = async(usdot) => {
+  const apiUrl = `https://mobile.fmcsa.dot.gov/qc/services/carriers/${usdot}?webKey=${process.env.FMCSA_WEB_KEY}`;
+
+  const response = await axios.get(apiUrl);
+
+  return response.data;
+}
+
 
 // Integration with Safer search API
 const searchVendorsFromFMCSA = async(name, page, size) => {
@@ -40,7 +49,7 @@ const searchVendorsFromFMCSA = async(name, page, size) => {
       console.log("got fmcsa search data from cache");
       results.data = JSON.parse(cachedData);
     } else {
-      const data = await fetchDataFromSaferWebAP(name);
+      const data = await fetchDataFromSaferWebAPI(name);
 
       if (data) {
         // Cache the data
@@ -76,6 +85,7 @@ const fetchDataFromSaferWebAPIByUSDOT = async(usdot) => {
   return response.data;
 }
 
+// Calls both MobileFMCSA and SaferWebAPI to get vendor details
 export const getVendorByUSDOTFromFMCSA = async(req, res) => {
   const { usdot } = req.params;
 
@@ -91,9 +101,18 @@ export const getVendorByUSDOTFromFMCSA = async(req, res) => {
       console.log("got fmcsa vendor usdot data from cache");
       return res.status(200).json(JSON.parse(cachedData));
     } else {
-      const data = await fetchDataFromSaferWebAPIByUSDOT(usdot);
+      let data;
+      const saferData = await fetchDataFromSaferWebAPIByUSDOT(usdot);
+      const mobileFMCSAData = await fetchDataFromMobileFMCSA(usdot);
 
-      if (data) {
+      console.log("mobileFMCSAData", mobileFMCSAData);
+      
+      data = {
+        saferData,
+        mobileFMCSAData
+      }
+
+      if (saferData || mobileFMCSAData) {
         // Cache the data with prefix "usdot:" for distinction
         await client.set(`fmcsa_data_usdot:${usdot}`, JSON.stringify(data), {
           EX: process.env.REDIS_CACHE_EXPIRE_TIME
