@@ -1,53 +1,53 @@
-import Contract from "../models/contract.js";
+import RFPRequest from "../models/rfp_request";
 import { v4 as uuidv4 } from 'uuid';
 
-export const getContractsWithShipperID = async (req, res) => {
+export const getRFPRequestsWithShipperID = async (req, res) => {
   if (!req.query.shipperID) {
     return res.status(404).json({ message: "Shipper ID not provided." });
   }
 
   try {
-    const contracts = await Contract.find({
+    const RFPRequests = await RFPRequest.find({
       shipperID: req.query.shipperID,
     });
 
-    res.status(200).json(contracts);
+    res.status(200).json(RFPRequests);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 }
 
-export const getContractsWithShipperIDAndVendorID = async (req, res) => {
+export const getRFPRequestsWithShipperIDAndVendorID = async (req, res) => {
   if (!req.query.shipperID || !req.query.vendorID) {
     return res.status(404).json({ message: "Shipper ID or vendor ID not provided." });
   }
 
   try {
-    const contracts = await Contract.find({
+    const RFPRequests = await RFPRequest.find({
       shipperID: req.query.shipperID,
       vendorID: req.query.vendorID,
     });
 
-    res.status(200).json(contracts);
+    res.status(200).json(RFPRequests);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 }
 
-export const createContract = async (req, res) => {
+export const createRFPRequest = async (req, res) => {
   // if req.body is missing any required fields, return 404
-  if (!req.body.contractName || !req.body.vendorID || !req.body.shipperID || !req.body.price) {
+  if (!req.body.RFPRequestName || !req.body.vendorID || !req.body.shipperID) {
     return res.status(404).json({ message: "Missing required fields." });
   }
 
-  const newContract = new Contract(req.body);
-  newContract.status = "Initiated"
-  newContract.contractID = uuidv4();
+  const newRFPRequest = new RFPRequest(req.body);
+  newRFPRequest.RFPRequestID = uuidv4();
+  newRFPRequest.RFPRequestStatus = "Initiated"
 
   try {
-    await newContract.save();
-    res.status(201).json(newContract);
+    await newRFPRequest.save();
+    res.status(201).json(newRFPRequest);
   } catch (error) {
     res.status(409).json({ message: error.message });
-  }
+  } 
 }

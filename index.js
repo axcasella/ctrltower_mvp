@@ -9,7 +9,7 @@ import morgan from 'morgan';
 import vendorRoutes from './routes/vendors.js';
 import generalRoutes from './routes/general.js';
 import contractManagementRoutes from './routes/contract_management.js';
-import dealsRoutes from './routes/deals.js';
+import rfp_managementRoutes from './routes/deals.js';
 import settingsRoutes from './routes/settings.js';
 
 // Mock data import
@@ -42,6 +42,8 @@ app.use("/contract_management", contractManagementRoutes);
 app.use("/deals", dealsRoutes);
 // for settings
 app.use("/settings", settingsRoutes);
+// for RFPs
+app.use("/rfp_management", rfp_managementRoutes);
 
 // Mongoose
 const PORT = process.env.PORT || 5001;

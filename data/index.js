@@ -1,12 +1,12 @@
 export const dataUser = [
   {
     _id: "63701cc1f03239c72c00017f",
-    name: "Matt Kennedy",
+    name: "Wesley Williams",
     email: "matt@frida.com",
     password: "pass0",
     company: "Frida",
     phone: "8346315874",
-    occupation: "VP of Operations"
+    occupation: "Senior Director of Logistics"
   },
   {
     _id: "63701cc1f03239c72c000180",
