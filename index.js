@@ -11,6 +11,7 @@ import generalRoutes from './routes/general.js';
 import contractManagementRoutes from './routes/contract_management.js';
 import rfp_managementRoutes from './routes/deals.js';
 import settingsRoutes from './routes/settings.js';
+import dealsRoutes from './routes/deals.js';
 
 // Mock data import
 import User from "./models/user.js";
