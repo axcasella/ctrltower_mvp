@@ -33,46 +33,6 @@ const fetchDataFromMobileFMCSA = async(usdot) => {
   return response.data;
 }
 
-
-// Integration with Safer search API
-const searchVendorsFromFMCSA = async(name, page, size) => {
-  const start = (page - 1) * size;
-  const end = page * size;
-
-  try {
-    let results = {};
-
-    // Try to fetch from cache
-    const cachedData = await client.get(name);
-
-    if (cachedData) {
-      console.log("got fmcsa search data from cache");
-      results.data = JSON.parse(cachedData);
-    } else {
-      const data = await fetchDataFromSaferWebAPI(name);
-
-      if (data) {
-        // Cache the data
-        await client.set(name, JSON.stringify(data), {
-          EX: process.env.REDIS_CACHE_EXPIRE_TIME
-        });
-
-        console.log("fmcsa search data cached");
-        results.data = data;
-      } 
-    }
-
-    // return paginated results
-    results.totalPages = Math.ceil(results.data.length / size);
-    results.totalResults = results.data.length;
-    results.vendors = results.data.slice(start, end);
-    return results;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-
 const fetchDataFromSaferWebAPIByUSDOT = async(usdot) => {
   const apiUrl = `https://saferwebapi.com/v2/usdot/snapshot/${usdot}`;
 
@@ -133,33 +93,79 @@ export const getVendorByUSDOTFromFMCSA = async(req, res) => {
   }
 };
 
-export const searchVendors = async(req, res) => {
-  const { name, pageNumber, pageSize } = req.query;
+const fetchVendorDetailsForVendorsSearch = async (usdot) => {
+  const cacheKey = `vendorsearch_vendor_details_USDOT_${usdot}`;
 
-  const page = pageNumber || 1;
-  const size = pageSize || 12;
+  // Try to get the vendor detail from cache
+  const cachedVendorData = await client.get(cacheKey);
+  
+  if (cachedVendorData) {
+    console.log(`got vendor detail for USDOT: ${usdot} from cache`);
+    return JSON.parse(cachedVendorData);
+  } else {
+    const data = await fetchDataFromSaferWebAPIByUSDOT(usdot);
+    // Cache the vendor detail
+    await client.set(cacheKey, JSON.stringify(data), {
+      EX: process.env.REDIS_CACHE_EXPIRE_TIME
+    });
+    console.log(`cached vendor detail for USDOT: ${usdot}`);
+    return data;
+  }
+};
+
+export const searchVendors = async(req, res) => {
+  const { name, pageSize, cargoFilter, cursor } = req.query;
+
+  const size = parseInt(pageSize) || 12;
+  let lastCheckedVendorIndex = cursor ? parseInt(cursor) : 0; 
   
   if (!name) {
     return res.status(400).json({ error: 'The "name" parameter is required.' });
   }
 
+  let vendors = [];
+  let searchData;
+
+  // Try to get the entire search data from cache
+  const cachedSearchData = await client.get(name);
+  
+  if (cachedSearchData) {
+    console.log("got entire search data from cache");
+    searchData = JSON.parse(cachedSearchData);
+  } else {
+    searchData = await fetchDataFromSaferWebAPI(name);
+    // Cache the entire search results
+    await client.set(name, JSON.stringify(searchData), {
+      EX: process.env.REDIS_CACHE_EXPIRE_TIME
+    });
+    console.log("entire search data cached");
+  }
+  
   try {
-    let vendors = [];
-    // search vendors from FMCSA
-    const searchResult = await searchVendorsFromFMCSA(name, page, size);
-    // for each vendor in data, call fetchDataFromSaferWebAPIByUSDOT to get the details and append to result
-    for (const vendor of searchResult.vendors) {
-      const data = await fetchDataFromSaferWebAPIByUSDOT(vendor.usdot);
-      if (data) vendors.push(data);
-    }
+    // Start fetching details from the last checked index
+    const toFetchVendors = searchData.slice(lastCheckedVendorIndex);
+
+    // Fetch details for the sliced vendors
+    const detailsArray = await Promise.all(toFetchVendors.map(vendor => fetchVendorDetailsForVendorsSearch(vendor.usdot)));
     
-    // return the data
+    const detailsSet = new Set();
+    for (const details of detailsArray) {
+      lastCheckedVendorIndex++; // Always increment the cursor to keep track of the last checked vendor
+
+      if (details.usdot && !detailsSet.has(details.usdot)) {
+        if (!cargoFilter || (details.cargo_carried.includes(cargoFilter))) {
+            vendors.push(details);
+            if (vendors.length === size) break; // Stop if we've reached the desired number of vendors
+        }
+        detailsSet.add(details.usdot);
+      }
+    }
+
+    // Return the results along with the new cursor
     return res.status(200).json({
-      currentPage: pageNumber,
-      pageSize: pageSize,
-      totalPages: searchResult.totalPages,
-      totalResults: searchResult.totalResults,
-      data: vendors
+        data: vendors,
+        cursor: lastCheckedVendorIndex,
+        totalResults: searchData.length 
     });
   } catch (error) {
     if (error.response) {
