@@ -32,6 +32,14 @@ const UserSchema = new mongoose.Schema(
       min: 2,
       max: 100,
     },
+    companyID: {
+      type: String,
+      required: true,
+    },
+    companyType: {
+      type: String,
+      required: true,
+    },
     occupation: {
       type: String,
       required: true,
