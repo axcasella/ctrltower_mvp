@@ -10,6 +10,10 @@ const RFPRequestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    vendorName: {
+      type: String,
+      required: true,
+    },
     shipperID: {
       type: String,
       required: true,

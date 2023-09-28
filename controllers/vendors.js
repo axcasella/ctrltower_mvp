@@ -134,6 +134,7 @@ export const searchVendors = async(req, res) => {
     searchData = JSON.parse(cachedSearchData);
   } else {
     searchData = await fetchDataFromSaferWebAPI(name);
+    console.log("searchData ", searchData)
     // Cache the entire search results
     await client.set(name, JSON.stringify(searchData), {
       EX: process.env.REDIS_CACHE_EXPIRE_TIME
@@ -142,6 +143,13 @@ export const searchVendors = async(req, res) => {
   }
   
   try {
+    if (searchData.message) {
+      return res.status(200).json({
+        data: [],
+        cursor: lastCheckedVendorIndex,
+        totalResults: 0 
+      });
+    }
     // Start fetching details from the last checked index
     const toFetchVendors = searchData.slice(lastCheckedVendorIndex);
 

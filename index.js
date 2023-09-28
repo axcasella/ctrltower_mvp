@@ -9,7 +9,7 @@ import morgan from 'morgan';
 import vendorRoutes from './routes/vendors.js';
 import generalRoutes from './routes/general.js';
 import contractManagementRoutes from './routes/contract_management.js';
-import rfp_managementRoutes from './routes/deals.js';
+import rfp_managementRoutes from './routes/rfp_management.js';
 import settingsRoutes from './routes/settings.js';
 import dealsRoutes from './routes/deals.js';
 

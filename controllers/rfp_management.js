@@ -1,14 +1,16 @@
-import RFPRequest from "../models/rfp_request";
+import RFPRequest from "../models/rfp_request.js";
 import { v4 as uuidv4 } from 'uuid';
 
 export const getRFPRequestsWithShipperID = async (req, res) => {
-  if (!req.query.shipperID) {
+  const { shipperID } = req.params;
+  
+  if (!shipperID) {
     return res.status(404).json({ message: "Shipper ID not provided." });
   }
 
   try {
     const RFPRequests = await RFPRequest.find({
-      shipperID: req.query.shipperID,
+      shipperID: shipperID,
     });
 
     res.status(200).json(RFPRequests);
@@ -36,13 +38,13 @@ export const getRFPRequestsWithShipperIDAndVendorID = async (req, res) => {
 
 export const createRFPRequest = async (req, res) => {
   // if req.body is missing any required fields, return 404
-  if (!req.body.RFPRequestName || !req.body.vendorID || !req.body.shipperID) {
+  if (!req.body.RFPRequestName || !req.body.vendorID || !req.body.shipperID || !req.body.vendorName) {
     return res.status(404).json({ message: "Missing required fields." });
   }
 
   const newRFPRequest = new RFPRequest(req.body);
   newRFPRequest.RFPRequestID = uuidv4();
-  newRFPRequest.RFPRequestStatus = "Initiated"
+  newRFPRequest.RFPRequestStatus = "Initiated";
 
   try {
     await newRFPRequest.save();
