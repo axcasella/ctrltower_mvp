@@ -10,7 +10,7 @@ const ShipperSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    tags: {
+    freight_types: {
       type: [String],
     },
     industry: {
@@ -33,7 +33,10 @@ const ShipperSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    phone_number: {
+    country: {
+      type: String,
+    },
+    phone: {
       type: String,
       required: true,
     },
@@ -43,12 +46,20 @@ const ShipperSchema = new mongoose.Schema(
     },
     website: {
       type: String,
+      required: true,
     },
-    annual_volume: {
+    primary_contact_name: {
+      type: String,
+      required: true,
+    },
+    shipping_frequency: {
       type: String,
     },
-    annual_spend: {
-      type: String,
+    common_routes: {
+      type: [String],
+    },
+    hazard_requirement: {
+      type: Boolean,
     },
   },
   { timestamps: true }

@@ -12,6 +12,8 @@ import contractManagementRoutes from './routes/contract_management.js';
 import rfp_managementRoutes from './routes/rfp_management.js';
 import settingsRoutes from './routes/settings.js';
 import dealsRoutes from './routes/deals.js';
+import onboardRoutes from './routes/onboard.js';
+import loadRoutes from './routes/load.js';
 
 // Mock data import
 import User from "./models/user.js";
@@ -45,6 +47,10 @@ app.use("/deals", dealsRoutes);
 app.use("/settings", settingsRoutes);
 // for RFPs
 app.use("/rfp_management", rfp_managementRoutes);
+// for onboarding
+app.use("/onboard", onboardRoutes);
+// for loads
+app.use("/load", loadRoutes);
 
 // Mongoose
 const PORT = process.env.PORT || 5001;
