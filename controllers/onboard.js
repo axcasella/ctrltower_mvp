@@ -4,8 +4,6 @@ import Carrier from "../models/carrier.js";
 export const onboardShipper = async (req, res) => {
   const newShipper = new Shipper(req.body);
 
-  console.log("here");
-
   try {
     await newShipper.save();
     res.status(201).json(newShipper);
