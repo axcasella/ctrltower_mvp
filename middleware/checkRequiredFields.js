@@ -83,7 +83,7 @@ export const checkRequiredLoadFields = (req, res, next) => {
   const missingFields = [];
 
   requiredFields.forEach(field => {
-      if (!req.body[field]) {
+      if (!req.body.hasOwnProperty(field)) {
           missingFields.push(field);
       }
   });
