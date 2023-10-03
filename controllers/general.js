@@ -45,9 +45,7 @@ export const loginUser = async (req, res) => {
 }
 
 export const registerUser = async (req, res) => {
-  const { name, email, phone, password, company, companyID, companyType, occupation } = req.body;
-  console.log("name", name);
-  console.log("email", email);
+  const { first_name, last_name, email, phone, password, company, companyID, companyType, occupation } = req.body;
 
   const userWithEmail = await User.findOne({ email }).catch(
     (err) => {
@@ -59,7 +57,7 @@ export const registerUser = async (req, res) => {
     return res.status(404).json({ message: "User with this email already registered." });
   }
 
-  const newUser = new User({ name, email, phone, password, company, companyID, companyType, occupation });
+  const newUser = new User({ first_name, last_name, email, phone, password, company, companyID, companyType, occupation });
 
   try {
     await newUser.save();
