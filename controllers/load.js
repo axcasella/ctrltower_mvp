@@ -12,3 +12,27 @@ export const addLoad = async (req, res) => {
       });
   }
 };
+
+export const getLoadByShipperID = async (req, res) => {
+    try {
+        const loads = await Load.find({ shipperID: req.params.shipperID });
+        res.status(200).json(loads);
+    } catch (error) {
+        res.status(404).json({
+            error: "Load not found",
+            details: error.message
+        });
+    }
+}
+
+export const getAllLoads = async (req, res) => {
+    try {
+        const loads = await Load.find();
+        res.status(200).json(loads);
+    } catch (error) {
+        res.status(404).json({
+            error: "Load not found",
+            details: error.message
+        });
+    }
+}

@@ -3,8 +3,14 @@ import mongoose from 'mongoose';
 // Load Schema
 // ⁃	Payment term (upon delivery, net-30 days)
 // ⁃	Hazmat (yes no)
+
+// TODO: add active status
 const LoadSchema = new mongoose.Schema(
   {
+    shipperID: {
+      type: String,
+      required: true,
+    },
     origin_address: {
       type: String,
       required: true,
