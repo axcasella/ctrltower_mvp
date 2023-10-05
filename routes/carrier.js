@@ -1,5 +1,5 @@
 import express from "express";
-import { getCarriers } from "../controllers/carriers.js"
+import { getCarriers } from "../controllers/carrier.js"
 
 const router = express.Router();
 
