@@ -8,7 +8,8 @@ import mongoose from 'mongoose';
 const LoadSchema = new mongoose.Schema(
   {
     shipperID: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Shipper",
       required: true,
     },
     origin_address: {

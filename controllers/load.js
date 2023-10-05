@@ -13,7 +13,7 @@ export const addLoad = async (req, res) => {
   }
 };
 
-export const getLoadByShipperID = async (req, res) => {
+export const getLoadsByShipperID = async (req, res) => {
     try {
         const loads = await Load.find({ shipperID: req.params.shipperID });
         res.status(200).json(loads);
@@ -27,7 +27,10 @@ export const getLoadByShipperID = async (req, res) => {
 
 export const getAllLoads = async (req, res) => {
     try {
-        const loads = await Load.find();
+        const loads = await Load.find()
+                                .populate('shipperID')
+                                .exec();
+
         res.status(200).json(loads);
     } catch (error) {
         res.status(404).json({
