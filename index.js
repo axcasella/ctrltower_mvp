@@ -14,6 +14,7 @@ import settingsRoutes from './routes/settings.js';
 import dealsRoutes from './routes/deals.js';
 import onboardRoutes from './routes/onboard.js';
 import loadRoutes from './routes/load.js';
+import carrierRoutes from './routes/carrier.js';
 
 // Mock data import
 import User from "./models/user.js";
@@ -51,6 +52,8 @@ app.use("/rfp_management", rfp_managementRoutes);
 app.use("/onboard", onboardRoutes);
 // for loads
 app.use("/load", loadRoutes);
+// for carriers
+app.use("/carrier", carrierRoutes);
 
 // Mongoose
 const PORT = process.env.PORT || 5001;
