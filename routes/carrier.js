@@ -1,8 +1,8 @@
 import express from "express";
-import { getCarriers } from "../controllers/carrier.js"
+import { getCTCarriers } from "../controllers/carrier.js"
 
 const router = express.Router();
 
-router.get("/carrier", getCarriers);
+router.get("/allCTCarriers", getCTCarriers);
 
 export default router;
