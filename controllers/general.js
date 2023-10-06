@@ -14,8 +14,6 @@ export const getUser = async (req, res) => {
 export const loginUser = async (req, res) => {
 
   const { email, password } = req.body;
-  console.log("email: ", email);
-  console.log("password: ", password);
 
   const userWithEmail = await User.findOne({ email }).catch(
     (err) => {

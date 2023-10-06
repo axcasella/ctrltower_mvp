@@ -2,7 +2,7 @@ import RFPRequest from "../models/rfp_request.js";
 import { v4 as uuidv4 } from 'uuid';
 
 export const getRFPRequestsWithShipperID = async (req, res) => {
-  const { shipperID } = req.params;
+  const { shipperID } = req.params;  
   
   if (!shipperID) {
     return res.status(404).json({ message: "Shipper ID not provided." });
